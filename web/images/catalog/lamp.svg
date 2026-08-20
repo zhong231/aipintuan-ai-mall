@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+  <defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#fef9c3"/><stop offset="1" stop-color="#fed7aa"/></linearGradient><radialGradient id="l"><stop stop-color="#fff" stop-opacity=".95"/><stop offset="1" stop-color="#fde047" stop-opacity="0"/></radialGradient></defs>
+  <rect width="640" height="480" rx="32" fill="url(#g)"/><circle cx="380" cy="208" r="190" fill="url(#l)"/>
+  <path d="M263 112h200l-34 100H297z" fill="#f8fafc" stroke="#334155" stroke-width="12"/><path d="M363 212v142" stroke="#334155" stroke-width="18"/><path d="M270 390c0-30 42-54 93-54s93 24 93 54z" fill="#334155"/><circle cx="363" cy="214" r="15" fill="#f59e0b"/><path d="M320 230h86l38 92H282z" fill="#fde68a" opacity=".45"/><text x="50" y="438" font-size="25" font-weight="700" fill="#92400e">全光谱 · 无频闪护眼</text>
+</svg>

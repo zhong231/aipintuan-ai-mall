@@ -1,0 +1,132 @@
+services:
+  mysql:
+    image: mysql:8.0.32
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-aipintuan_local}
+      TZ: Asia/Shanghai
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./database/01-mall.sql:/docker-entrypoint-initdb.d/01-mall.sql:ro
+      - ./database/02-group-buy.sql:/docker-entrypoint-initdb.d/02-group-buy.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -p$${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:3.12-management-alpine
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: jc_voice_shopping
+      POSTGRES_USER: voice_shopping
+      POSTGRES_PASSWORD: ${VOICE_DB_PASSWORD:-voice_shopping_local}
+      TZ: Asia/Shanghai
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./services/voice-agent/src/main/resources/sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./services/voice-agent/src/main/resources/sql/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U voice_shopping -d jc_voice_shopping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  group-buy-service:
+    build: ./services/group-buy-service
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-aipintuan_local}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-admin}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mall-service:
+    build: ./services/mall-service
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-aipintuan_local}
+      RABBITMQ_USERNAME: ${RABBITMQ_USERNAME:-admin}
+      RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD:-admin}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      group-buy-service:
+        condition: service_started
+    restart: unless-stopped
+
+  voice-agent:
+    build:
+      context: ./services/voice-agent
+      dockerfile: Dockerfile.local
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      VOICE_DB_URL: jdbc:postgresql://postgres:5432/jc_voice_shopping
+      VOICE_DB_USERNAME: voice_shopping
+      VOICE_DB_PASSWORD: ${VOICE_DB_PASSWORD:-voice_shopping_local}
+      VOICE_REDIS_HOST: redis
+      VOICE_REDIS_PORT: 6379
+      VOICE_REDIS_DATABASE: 1
+      DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-local-placeholder}
+      TZ: Asia/Shanghai
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  web:
+    image: nginx:1.27-alpine
+    ports:
+      - "8088:80"
+    volumes:
+      - ./web:/usr/share/nginx/html:ro
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      mall-service:
+        condition: service_started
+      group-buy-service:
+        condition: service_started
+      voice-agent:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  mysql-data:
+  redis-data:
+  postgres-data:
+

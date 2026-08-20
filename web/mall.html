@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="爱拼团商城首页，搜索商品并享受多人拼团优惠">
+    <title>爱拼团-商城首页</title>
+    <link rel="stylesheet" href="css/mall.css">
+    <link rel="stylesheet" href="css/voice-agent.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="header-inner">
+        <a class="brand" href="mall.html" aria-label="爱拼团首页">
+            <span class="brand-mark">拼</span>
+            <span><strong>爱拼团</strong><small>一起买，更划算</small></span>
+        </a>
+        <form class="search-box" id="searchForm">
+            <span class="search-icon">⌕</span>
+            <input id="searchInput" type="search" autocomplete="off" placeholder="搜索商品、分类，例如：跑鞋、500元以内">
+            <button type="submit">搜索</button>
+        </form>
+        <a class="order-link" href="order-list.html"><span>▣</span> 我的订单</a>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-copy">
+            <span class="eyebrow">AI 语音导购已上线</span>
+            <h1>好物一起拼<br><em>价格更动心</em></h1>
+            <p>搜索你想要的商品，或直接问右下角的语音导购。</p>
+            <button id="heroVoiceButton" type="button">🎤 试试语音找好物</button>
+        </div>
+        <div class="hero-visual" aria-hidden="true">
+            <div class="deal-card deal-card-one"><b>¥80</b><span>图书拼团价</span></div>
+            <div class="deal-card deal-card-two"><b>3人成团</b><span>限时直降</span></div>
+            <div class="hero-bag">拼</div>
+        </div>
+    </section>
+
+    <section class="catalog-section">
+        <div class="catalog-toolbar">
+            <nav class="category-nav" id="categoryNav" aria-label="商品分类">
+                <button class="active" data-category="推荐">推荐</button>
+                <button data-category="图书">图书</button>
+                <button data-category="数码">数码</button>
+                <button data-category="家居">家居</button>
+                <button data-category="食品">食品</button>
+                <button data-category="运动">运动</button>
+                <button data-category="美妆">美妆</button>
+                <button data-category="百货">百货</button>
+            </nav>
+            <div class="price-filter" id="priceFilter">
+                <span>价格：</span>
+                <button class="active" data-price="">不限</button>
+                <button data-price="200">¥200内</button>
+                <button data-price="300">¥300内</button>
+                <button data-price="500">¥500内</button>
+            </div>
+        </div>
+
+        <div class="result-heading">
+            <div><h2 id="resultTitle">今日推荐</h2><p id="resultHint">正在为你挑选高性价比拼团好物</p></div>
+            <span id="resultCount"></span>
+        </div>
+
+        <div class="product-grid" id="productGrid" aria-live="polite">
+            <div class="loading-card"></div><div class="loading-card"></div>
+            <div class="loading-card"></div><div class="loading-card"></div>
+        </div>
+        <div class="empty-state" id="emptyState" hidden>
+            <div>⌕</div><h3>没有找到符合条件的商品</h3><p>换个关键词或价格范围试试，也可以问问语音导购。</p>
+        </div>
+    </section>
+</main>
+
+<footer><strong>爱拼团</strong><span>本地融合演示商城 · 商品、拼团与 AI Agent 已联通</span></footer>
+
+<script src="js/common.js"></script>
+<script src="js/mall.js"></script>
+<script src="js/catalog-voice-agent.js"></script>
+</body>
+</html>

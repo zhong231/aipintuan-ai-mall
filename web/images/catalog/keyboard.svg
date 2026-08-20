@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
+  <defs><linearGradient id="g" x2="1" y2="1"><stop stop-color="#dbeafe"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient><filter id="s"><feDropShadow dy="18" stdDeviation="14" flood-opacity=".22"/></filter></defs>
+  <rect width="640" height="480" rx="32" fill="url(#g)"/><circle cx="92" cy="88" r="64" fill="#fff" opacity=".35"/>
+  <g transform="translate(70 132) skewX(-5)" filter="url(#s)"><rect width="500" height="220" rx="28" fill="#22283a"/><g fill="#f8fafc">
+    <path d="M30 30h45v38H30zm57 0h45v38H87zm57 0h45v38h-45zm57 0h45v38h-45zm57 0h45v38h-45zm57 0h45v38h-45zm57 0h45v38h-45zm57 0h45v38h-45z"/>
+    <path d="M42 82h48v40H42zm60 0h48v40h-48zm60 0h48v40h-48zm60 0h48v40h-48zm60 0h48v40h-48zm60 0h48v40h-48zm60 0h70v40h-70z" fill="#ddd6fe"/>
+    <path d="M55 136h55v42H55zm67 0h55v42h-55zm67 0h190v42H189zm202 0h66v42h-66z" fill="#bfdbfe"/>
+  </g></g><text x="72" y="420" font-size="26" font-weight="700" fill="#312e81">K87 · 三模连接</text>
+</svg>

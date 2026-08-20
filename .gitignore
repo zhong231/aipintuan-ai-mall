@@ -1,0 +1,14 @@
+.env
+*.log
+logs/
+target/
+**/target/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+data/
+**/data/
+*.pid
+

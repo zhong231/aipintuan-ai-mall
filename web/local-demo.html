@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>进入本地融合商城</title>
+</head>
+<body>
+<p>正在进入本地商城…</p>
+<script>
+    // 仅用于本机联调，跳过微信登录并使用固定的演示用户。
+    document.cookie = 'loginToken=local-demo-user; path=/; SameSite=Lax';
+    window.location.replace('mall.html');
+</script>
+</body>
+</html>
