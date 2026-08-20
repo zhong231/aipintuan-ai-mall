@@ -30,7 +30,7 @@ public class IIndexGroupBuyMarketServiceTest {
     @Test
     public void test_indexMarketTrial() throws Exception {
         MarketProductEntity marketProductEntity = new MarketProductEntity();
-        marketProductEntity.setUserId("zwn");
+        marketProductEntity.setUserId("zhongwn");
         marketProductEntity.setSource("s01");
         marketProductEntity.setChannel("c01");
         marketProductEntity.setGoodsId("9890001");
@@ -56,7 +56,7 @@ public class IIndexGroupBuyMarketServiceTest {
     @Test
     public void test_indexMarketTrial_error() throws Exception {
         MarketProductEntity marketProductEntity = new MarketProductEntity();
-        marketProductEntity.setUserId("zwn");
+        marketProductEntity.setUserId("zhongwn");
         marketProductEntity.setSource("s01");
         marketProductEntity.setChannel("c01");
         marketProductEntity.setGoodsId("9890002");

@@ -17,7 +17,7 @@ public class RuleLogic202 implements ILogicHandler<String, Rule02TradeRuleFactor
 
         log.info("link model02 RuleLogic202");
 
-        return new XxxResponse("hi zwn！");
+        return new XxxResponse("hi zhongwn！");
     }
 
 }

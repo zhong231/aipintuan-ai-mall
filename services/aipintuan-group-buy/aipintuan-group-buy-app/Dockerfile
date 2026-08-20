@@ -2,7 +2,7 @@
 FROM openjdk:8-jre-slim
 
 # 作者
-LABEL org.opencontainers.image.authors="zwn"
+LABEL org.opencontainers.image.authors="zhongwn <2518166961@qq.com>"
 
 # 配置
 ENV PARAMS=""

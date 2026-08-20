@@ -43,7 +43,7 @@ public class DCCControllerTest {
 
         // 营销验证
         MarketProductEntity marketProductEntity = new MarketProductEntity();
-        marketProductEntity.setUserId("zwn");
+        marketProductEntity.setUserId("zhongwn");
         marketProductEntity.setSource("s01");
         marketProductEntity.setChannel("c01");
         marketProductEntity.setGoodsId("9890001");
