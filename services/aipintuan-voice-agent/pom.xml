@@ -11,7 +11,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.jichi</groupId>
+    <groupId>com.aipintuan</groupId>
     <artifactId>aipintuan-voice-agent</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>aipintuan-voice-agent</name>

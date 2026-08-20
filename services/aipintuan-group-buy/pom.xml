@@ -2,7 +2,7 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>cn.bugstack</groupId>
+    <groupId>com.aipintuan</groupId>
     <artifactId>aipintuan-group-buy</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
@@ -40,10 +40,9 @@
 
     <developers>
         <developer>
-            <name>xiaofuge</name>
-            <email>184172133@qq.com</email>
-            <organization>fuzhengwei</organization>
-            <organizationUrl>https://github.com/fuzhengwei</organizationUrl>
+            <name>zwn</name>
+            <organization>爱拼团</organization>
+            <organizationUrl>https://github.com/zhong231</organizationUrl>
         </developer>
     </developers>
 
@@ -122,7 +121,7 @@
                 <version>3.26.0</version>
             </dependency>
 
-            <!-- http 接口框架 https://bugstack.cn/md/road-map/http.html -->
+            <!-- http 接口框架  -->
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp-sse</artifactId>
@@ -143,27 +142,27 @@
 
             <!-- 工程模块 -->
             <dependency>
-                <groupId>cn.bugstack</groupId>
+                <groupId>com.aipintuan</groupId>
                 <artifactId>aipintuan-group-buy-api</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>cn.bugstack</groupId>
+                <groupId>com.aipintuan</groupId>
                 <artifactId>aipintuan-group-buy-domain</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>cn.bugstack</groupId>
+                <groupId>com.aipintuan</groupId>
                 <artifactId>aipintuan-group-buy-infrastructure</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>cn.bugstack</groupId>
+                <groupId>com.aipintuan</groupId>
                 <artifactId>aipintuan-group-buy-types</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>cn.bugstack</groupId>
+                <groupId>com.aipintuan</groupId>
                 <artifactId>aipintuan-group-buy-trigger</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>

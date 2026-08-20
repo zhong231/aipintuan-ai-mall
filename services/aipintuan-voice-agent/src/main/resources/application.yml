@@ -83,7 +83,7 @@ management:
 # 日志
 logging:
   level:
-    com.jichi.voiceshopping: DEBUG
+    com.aipintuan.voiceagent: DEBUG
     org.hibernate.SQL: WARN
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

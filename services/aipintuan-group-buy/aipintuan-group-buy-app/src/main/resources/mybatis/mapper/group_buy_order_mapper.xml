@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.bugstack.infrastructure.dao.IGroupBuyOrderDao">
+<mapper namespace="com.aipintuan.infrastructure.dao.IGroupBuyOrderDao">
 
-    <resultMap id="dataMap" type="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <resultMap id="dataMap" type="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         <id column="id" property="id"/>
         <result column="team_id" property="teamId"/>
         <result column="activity_id" property="activityId"/>
@@ -23,7 +23,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <insert id="insert" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         insert into group_buy_order(
         team_id, activity_id, source, channel, original_price,
         deduction_price, pay_price, target_count, complete_count,
@@ -117,7 +117,7 @@
         </foreach>
     </select>
 
-    <update id="unpaid2Refund" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <update id="unpaid2Refund" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         update group_buy_order
         set lock_count = lock_count + #{lockCount}, update_time= now()
         where
@@ -125,7 +125,7 @@
         status = 0
     </update>
 
-    <update id="paid2Refund" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <update id="paid2Refund" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         update group_buy_order
         set lock_count = lock_count + #{lockCount},
         complete_count = complete_count + #{completeCount},
@@ -135,7 +135,7 @@
         status = 0
     </update>
 
-    <update id="paidTeam2Refund" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <update id="paidTeam2Refund" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         update group_buy_order
         set lock_count = lock_count + #{lockCount},
         complete_count = complete_count + #{completeCount},
@@ -145,7 +145,7 @@
         team_id = #{teamId} and (status = 1 or status = 3) and complete_count > 1
     </update>
 
-    <update id="paidTeam2RefundFail" parameterType="cn.bugstack.infrastructure.dao.po.GroupBuyOrder">
+    <update id="paidTeam2RefundFail" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrder">
         update group_buy_order
         set lock_count = lock_count + #{lockCount},
         complete_count = complete_count + #{completeCount},

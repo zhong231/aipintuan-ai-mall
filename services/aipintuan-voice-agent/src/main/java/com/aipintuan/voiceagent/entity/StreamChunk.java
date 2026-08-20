@@ -1,0 +1,23 @@
+package com.aipintuan.voiceagent.entity;
+
+import java.nio.ByteBuffer;
+
+public record StreamChunk(Type type, String text, ByteBuffer audio, Object products) {
+    public enum Type {TEXT, AUDIO, PRODUCTS, ACTION}
+
+    public static StreamChunk text(String t) {
+        return new StreamChunk(Type.TEXT, t, null, null);
+    }
+
+    public static StreamChunk audio(ByteBuffer a) {
+        return new StreamChunk(Type.AUDIO, null, a, null);
+    }
+
+    public static StreamChunk products(Object p) {
+        return new StreamChunk(Type.PRODUCTS, null, null, p);
+    }
+
+    public static StreamChunk action(Object payload) {
+        return new StreamChunk(Type.ACTION, null, null, payload);
+    }
+}

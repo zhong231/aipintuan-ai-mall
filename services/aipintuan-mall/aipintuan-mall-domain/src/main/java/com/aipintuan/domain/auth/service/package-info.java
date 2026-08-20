@@ -1,0 +1,1 @@
+package com.aipintuan.domain.auth.service;

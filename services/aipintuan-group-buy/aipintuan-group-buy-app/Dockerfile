@@ -2,7 +2,7 @@
 FROM openjdk:8-jre-slim
 
 # 作者
-MAINTAINER xiaofuge
+LABEL org.opencontainers.image.authors="zwn"
 
 # 配置
 ENV PARAMS=""

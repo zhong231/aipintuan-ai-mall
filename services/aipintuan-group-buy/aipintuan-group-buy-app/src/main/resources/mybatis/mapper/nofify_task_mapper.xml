@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="cn.bugstack.infrastructure.dao.INotifyTaskDao">
+<mapper namespace="com.aipintuan.infrastructure.dao.INotifyTaskDao">
 
-    <resultMap id="dataMap" type="cn.bugstack.infrastructure.dao.po.NotifyTask">
+    <resultMap id="dataMap" type="com.aipintuan.infrastructure.dao.po.NotifyTask">
         <id column="id" property="id"/>
         <result column="activity_id" property="activityId"/>
         <result column="team_id" property="teamId"/>
@@ -18,7 +18,7 @@
         <result column="update_time" property="updateTime"/>
     </resultMap>
 
-    <insert id="insert" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
+    <insert id="insert" parameterType="com.aipintuan.infrastructure.dao.po.NotifyTask">
         insert into notify_task(
         activity_id, team_id, notify_category, notify_type, notify_mq, notify_url,
         notify_count, notify_status, parameter_json, uuid, create_time, update_time)
@@ -40,19 +40,19 @@
         where team_id = #{teamId} and notify_status in (0, 2)
     </select>
 
-    <update id="updateNotifyTaskStatusSuccess" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
+    <update id="updateNotifyTaskStatusSuccess" parameterType="com.aipintuan.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count = notify_count + 1, notify_status = 1, update_time = now()
         where team_id = #{teamId} and uuid = #{uuid}
     </update>
 
-    <update id="updateNotifyTaskStatusError" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
+    <update id="updateNotifyTaskStatusError" parameterType="com.aipintuan.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count = notify_count + 1, notify_status = 3, update_time = now()
         where team_id = #{teamId} and uuid = #{uuid}
     </update>
 
-    <update id="updateNotifyTaskStatusRetry" parameterType="cn.bugstack.infrastructure.dao.po.NotifyTask">
+    <update id="updateNotifyTaskStatusRetry" parameterType="com.aipintuan.infrastructure.dao.po.NotifyTask">
         update notify_task
         set notify_count = notify_count + 1, notify_status = 2, update_time = now()
         where team_id = #{teamId} and uuid = #{uuid}
