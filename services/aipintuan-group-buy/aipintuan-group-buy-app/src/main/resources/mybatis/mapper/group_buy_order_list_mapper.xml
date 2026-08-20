@@ -87,10 +87,15 @@
 
     <select id="queryInProgressUserGroupBuyOrderDetailListByActivityId" parameterType="java.lang.Long"
             resultMap="dataMap">
-        select user_id, team_id, out_trade_no
-        from group_buy_order_list
-        where activity_id = #{activityId} and status in (0, 1)
-        group by team_id
+        select order_list.user_id, order_list.team_id, order_list.out_trade_no
+        from group_buy_order_list order_list
+        inner join (
+            select team_id, max(id) as latest_id
+            from group_buy_order_list
+            where activity_id = #{activityId} and status in (0, 1)
+            group by team_id
+        ) latest_order on latest_order.latest_id = order_list.id
+        order by order_list.id desc
     </select>
 
     <update id="unpaid2Refund" parameterType="com.aipintuan.infrastructure.dao.po.GroupBuyOrderList">
