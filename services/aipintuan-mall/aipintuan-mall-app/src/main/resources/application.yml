@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: aipintuan-mall-app
+  profiles:
+    active: public

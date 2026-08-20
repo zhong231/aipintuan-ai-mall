@@ -6,7 +6,7 @@
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
 # 主机: 127.0.0.1 (MySQL 5.6.39)
-# 数据库: s-pay-mall-ddd-market
+# 数据库: aipintuan_mall
 # 生成时间: 2025-02-06 09:26:46 +0000
 # ************************************************************
 
@@ -19,8 +19,8 @@ SET NAMES utf8mb4;
 /*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE database if NOT EXISTS `s-pay-mall-ddd-market` default character set utf8mb4 ;
-use `s-pay-mall-ddd-market`;
+CREATE database if NOT EXISTS `aipintuan_mall` default character set utf8mb4 ;
+use `aipintuan_mall`;
 
 # 转储表 pay_order
 # ------------------------------------------------------------

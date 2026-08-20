@@ -1,0 +1,5 @@
+spring:
+  config:
+    name: aipintuan-group-buy-app
+  profiles:
+    active: public

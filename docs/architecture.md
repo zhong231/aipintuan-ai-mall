@@ -5,9 +5,9 @@
 | 模块 | 职责 | 存储 |
 | --- | --- | --- |
 | `web` | 商城首页、详情、订单、语音导购弹窗 | 浏览器状态 |
-| `mall-service` | 商品目录、用户订单、支付回调、拼团结果通知 | MySQL |
-| `group-buy-service` | 营销活动、折扣、库存、组队与交易规则 | MySQL、Redis |
-| `voice-agent` | ASR、意图识别、检索推荐、商城动作、TTS | PostgreSQL/pgvector、Redis |
+| `aipintuan-mall` | 商品目录、用户订单、支付回调、拼团结果通知 | MySQL |
+| `aipintuan-group-buy` | 营销活动、折扣、库存、组队与交易规则 | MySQL、Redis |
+| `aipintuan-voice-agent` | ASR、意图识别、检索推荐、商城动作、TTS | PostgreSQL/pgvector、Redis |
 
 ## 商品推荐到开团
 
@@ -20,4 +20,3 @@
 ## 部署边界
 
 浏览器只访问 Nginx 的 `8088` 端口。`/mall-api`、`/group-api` 和 `/agent-api` 分别代理到三个内部服务，其中 `/agent-api/ws/voice` 支持 WebSocket Upgrade。服务器部署时只需将 `8088` 置于域名和 HTTPS 反向代理之后。
-

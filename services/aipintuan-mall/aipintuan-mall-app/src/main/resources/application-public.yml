@@ -1,0 +1,127 @@
+server:
+  port: 8070
+
+# 爱拼团应用配置
+aipintuan:
+  api-version: v1
+  cross-origin: '*'
+  integration:
+    group-buy:
+      api-url: ${AIPINTUAN_GROUP_BUY_API_URL:http://aipintuan-group-buy:8091}
+      notify-url: ${AIPINTUAN_MALL_NOTIFY_URL:http://aipintuan-mall:8070/api/v1/alipay/group_buy_notify}
+      source: s01
+      chanel: c01
+
+# 线程池配置
+thread:
+  pool:
+    executor:
+      config:
+        core-pool-size: 20
+        max-pool-size: 50
+        keep-alive-time: 5000
+        block-queue-size: 5000
+        policy: CallerRunsPolicy
+
+# 数据库配置；启动时配置数据库资源信息
+spring:
+  datasource:
+    username: root
+    password: ${AIPINTUAN_MYSQL_ROOT_PASSWORD:aipintuan_local}
+    url: ${AIPINTUAN_MALL_DB_URL:jdbc:mysql://mysql:3306/aipintuan_mall?useUnicode=true&characterEncoding=utf8&autoReconnect=true&serverTimezone=Asia/Shanghai&useSSL=false}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  hikari:
+    pool-name: Retail_HikariCP
+    minimum-idle: 15 #最小空闲连接数量
+    idle-timeout: 180000 #空闲连接存活最大时间，默认600000（10分钟）
+    maximum-pool-size: 25 #连接池最大连接数，默认是10
+    auto-commit: true  #此属性控制从池返回的连接的默认自动提交行为,默认值：true
+    max-lifetime: 1800000 #此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+    connection-timeout: 30000 #数据库连接超时时间,默认30秒，即30000
+    connection-test-query: SELECT 1
+  type: com.zaxxer.hikari.HikariDataSource
+  # RabbitMQ
+  rabbitmq:
+    addresses: ${AIPINTUAN_RABBITMQ_HOST:rabbitmq}
+    port: ${AIPINTUAN_RABBITMQ_PORT:5672}
+    username: ${AIPINTUAN_RABBITMQ_USERNAME:admin}
+    password: ${AIPINTUAN_RABBITMQ_PASSWORD:admin}
+    listener:
+      simple:
+        prefetch: 1 # 每次投递n个消息，消费完在投递n个
+    template:
+      delivery-mode: persistent # 确保全局默认设置为持久化（可选）
+    # 消息配置
+    config:
+      # 生产者
+      producer:
+        # 主题配置
+        topic_order_pay_success:
+          # 绑定交换机
+          exchange: aipintuan_mall_exchange
+          # 消费主题
+          routing_key: topic.order_pay_success
+          # 消费队列
+          queue: aipintuan_mall_queue_2_order_pay_success
+      consumer:
+        # 主题配置 topic 主题，team_success
+        topic_team_success:
+          # 绑定交换机 - 消息提供者的交换机
+          exchange: aipintuan_group_buy_exchange
+          # 消息主题
+          routing_key: topic.team_success
+          # 消费队列 - 每个系统有自己的消费队列
+          queue: aipintuan_mall_queue_2_topic_team_success
+        topic_team_refund:
+          # 绑定交换机 - 消息提供者的交换机
+          exchange: aipintuan_group_buy_exchange
+          # 消息主题
+          routing_key: topic.team_refund
+          # 消费队列
+          queue: aipintuan_mall_queue_2_topic_team_refund
+        # 主题配置
+        topic_order_pay_success:
+          # 绑定交换机
+          exchange: aipintuan_mall_exchange
+          # 消费主题
+          routing_key: topic.order_pay_success
+          # 消费队列
+          queue: aipintuan_mall_queue_2_order_pay_success
+
+# MyBatis 配置【如需使用记得打开】
+mybatis:
+  mapper-locations: classpath:/mybatis/mapper/*.xml
+  config-location:  classpath:/mybatis/config/mybatis-config.xml
+
+# 微信公众号对接
+weixin:
+  config:
+    originalid: ${AIPINTUAN_WEIXIN_ORIGINAL_ID:disabled}
+    token: ${AIPINTUAN_WEIXIN_TOKEN:disabled}
+    app-id: ${AIPINTUAN_WEIXIN_APP_ID:disabled}
+    app-secret: ${AIPINTUAN_WEIXIN_APP_SECRET:disabled}
+    template_id: ${AIPINTUAN_WEIXIN_TEMPLATE_ID:disabled}
+
+# 支付宝支付 - 沙箱 https://opendocs.alipay.com/common/02kkv7
+alipay:
+  enabled: ${AIPINTUAN_ALIPAY_ENABLED:false}
+  app_id: ${AIPINTUAN_ALIPAY_APP_ID:disabled}
+  merchant_private_key: ${AIPINTUAN_ALIPAY_MERCHANT_PRIVATE_KEY:disabled}
+  alipay_public_key: ${AIPINTUAN_ALIPAY_PUBLIC_KEY:disabled}
+  notify_url: ${AIPINTUAN_ALIPAY_NOTIFY_URL:http://localhost/disabled}
+  return_url: ${AIPINTUAN_ALIPAY_RETURN_URL:http://localhost/disabled}
+  gatewayUrl: https://openapi-sandbox.dl.alipaydev.com/gateway.do
+
+# SC 渠道配置 - 拼团对接渠道值
+sc:
+  group:
+    buy:
+      market:
+        source: s01
+        chanel: c01
+
+# 日志
+logging:
+  level:
+    root: info
+  config: classpath:logback-spring.xml

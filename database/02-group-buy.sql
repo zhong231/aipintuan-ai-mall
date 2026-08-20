@@ -6,7 +6,7 @@
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
 # 主机: 127.0.0.1 (MySQL 8.0.42)
-# 数据库: group_buy_market
+# 数据库: aipintuan_group_buy
 # 生成时间: 2025-08-03 23:27:02 +0000
 # ************************************************************
 
@@ -19,8 +19,8 @@ SET NAMES utf8mb4;
 /*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-CREATE database if NOT EXISTS `group_buy_market` default character set utf8mb4 collate utf8mb4_0900_ai_ci;
-use `group_buy_market`;
+CREATE database if NOT EXISTS `aipintuan_group_buy` default character set utf8mb4 collate utf8mb4_0900_ai_ci;
+use `aipintuan_group_buy`;
 
 # 转储表 crowd_tags
 # ------------------------------------------------------------

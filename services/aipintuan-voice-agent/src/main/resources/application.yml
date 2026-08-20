@@ -1,0 +1,92 @@
+spring:
+  application:
+    name: aipintuan-voice-agent
+  datasource:
+    url: ${AIPINTUAN_VOICE_DB_URL:jdbc:postgresql://localhost:5432/aipintuan_voice_agent}
+    username: ${AIPINTUAN_VOICE_DB_USERNAME:aipintuan_voice_agent}
+    password: ${AIPINTUAN_VOICE_DB_PASSWORD:aipintuan_voice_agent_local}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: Asia/Shanghai
+    open-in-view: false
+  data:
+    redis:
+      host: ${AIPINTUAN_VOICE_REDIS_HOST:localhost}
+      port: ${AIPINTUAN_VOICE_REDIS_PORT:6379}
+      password: ${AIPINTUAN_VOICE_REDIS_PASSWORD:}
+      database: ${AIPINTUAN_VOICE_REDIS_DATABASE:0}
+  cache:
+    type: redis
+    redis:
+      time-to-live: 30m
+      cache-null-values: false
+      key-prefix: "aipintuan:voice:cache:"
+
+# AgentScope + DashScope
+agentscope:
+  dashscope:
+    api-key: ${DASHSCOPE_API_KEY:local-placeholder}
+    model-name: qwen-max
+
+# 爱拼团自定义配置
+aipintuan:
+  voice-agent:
+    llm:
+      main-model: qwen-max
+      light-model: qwen-turbo
+    embedding:
+      model: text-embedding-v3
+      dim: 1024
+    vector:
+      product-topk: 20
+      faq-threshold: 0.75
+    voice:
+      asr-model: paraformer-realtime-v2
+      tts-model: cosyvoice-v1
+      tts-voice: longwan
+    session:
+      ttl-minutes: 30
+      max-history-turns: 10
+    compliance:
+      sensitive-word-file: classpath:compliance/sensitive-words.txt
+      absolute-claim-patterns: "最好,第一,保证,绝对"
+    perspective:
+      enabled: true
+
+# Sa-Token
+sa-token:
+  token-name: Authorization
+  token-prefix: Bearer
+  timeout: 2592000              # 30 天
+  is-concurrent: true
+  is-share: false
+  is-read-header: true
+  is-read-cookie: false
+  is-log: false
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    tags:
+      application: aipintuan-voice-agent
+
+# 日志
+logging:
+  level:
+    com.jichi.voiceshopping: DEBUG
+    org.hibernate.SQL: WARN
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+server:
+  port: 8080

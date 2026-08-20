@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: ${AIPINTUAN_VOICE_DB_URL:jdbc:postgresql://localhost:15432/aipintuan_voice_agent}
+    username: ${AIPINTUAN_VOICE_DB_USERNAME:aipintuan_voice_agent}
+    password: ${AIPINTUAN_VOICE_DB_PASSWORD:aipintuan_voice_agent_local}
+  data:
+    redis:
+      host: ${AIPINTUAN_VOICE_REDIS_HOST:localhost}
+      port: ${AIPINTUAN_VOICE_REDIS_PORT:6380}
+      password: ${AIPINTUAN_VOICE_REDIS_PASSWORD:}
+      database: ${AIPINTUAN_VOICE_REDIS_DATABASE:0}
+
+agentscope:
+  dashscope:
+    # 请通过 DASHSCOPE_API_KEY 环境变量提供自己的密钥。
+    api-key: ${DASHSCOPE_API_KEY:local-placeholder}
+
+aipintuan:
+  voice-agent:
+    voice:
+      # 没有个人 DashScope Key 时，禁止启动阶段调用远程 TTS。
+      cache-preload-enabled: false
+
+server:
+  port: ${AIPINTUAN_VOICE_SERVER_PORT:8080}

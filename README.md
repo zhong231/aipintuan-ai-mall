@@ -42,9 +42,9 @@ flowchart LR
 
 ```text
 web/                         商城前端
-services/mall-service/       商品、订单与支付服务
-services/group-buy-service/  拼团活动与库存服务
-services/voice-agent/        实时语音导购 Agent
+services/aipintuan-mall/         商品、订单与支付服务
+services/aipintuan-group-buy/    拼团活动与库存服务
+services/aipintuan-voice-agent/  实时语音导购 Agent
 database/                    MySQL 初始化数据
 deploy/nginx/                统一入口与 WebSocket 代理
 docs/                        架构、接口与演示资料
