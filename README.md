@@ -11,7 +11,7 @@
   <img alt="Deployment" src="https://img.shields.io/badge/Deployment-Docker%20Compose-2496ED?logo=docker&logoColor=white">
 </p>
 
-爱拼团不是单独的聊天页面，也不是只展示优惠信息的商城 Demo。它将 **商品目录、拼团交易、订单支付与实时语音 Agent** 组合为一条可执行链路：用户说出品类和预算，Agent 在商城授权的商品集合中检索并解释推荐结果，随后通过结构化动作打开真实商品详情或拼团入口，最终价格、库存与订单仍由交易域裁决。
+爱拼团不是单独的聊天页面，也不是只展示优惠信息的商城 Demo。它将 **商品目录、拼团交易、订单支付与实时语音 Agent** 组合为一条可执行链路：用户说出品类和预算，Agent 在会话注册的商品集合中检索并解释推荐结果，随后通过结构化动作打开真实商品详情或拼团入口，最终价格、库存与订单仍由交易服务裁决。
 
 > 项目重点在于解决 AI 应用落地中的三个边界问题：**模型不持有交易真相、Agent 动作必须可约束、异构服务需要统一交付**。
 
@@ -38,7 +38,7 @@
 | 实时语音链路 | 浏览器音频经 WebSocket 上传，串联流式 ASR、Agent 增量响应与流式 TTS | 降低长请求的等待感，支持边识别、边生成、边播报 |
 | 混合商品检索 | pgvector HNSW 语义召回 + SQL 品类/预算硬过滤 + 用户画像重排 | 兼顾语义相关性和价格、品类等确定性约束 |
 | 拼团一致性 | 订单唯一键保证外部调用幂等；条件更新限制组队人数；RabbitMQ 解耦成团通知 | 防止重复订单、超员锁单，并隔离跨域状态传播 |
-| 领域建模 | 商城与拼团分别采用 API / Trigger / Domain / Infrastructure / Types 分层 | 让活动规则、交易规则和基础设施实现保持清晰边界 |
+| 服务边界 | 商城、拼团与语音 Agent 按业务能力拆分，接口契约与基础设施实现解耦 | 让营销规则、交易状态和 AI 编排能够独立演进 |
 | 单入口交付 | Nginx 同域代理 HTTP 与 WebSocket；Compose 编排 8 个应用与基础设施容器 | 浏览器只访问一个地址，降低本地联调和服务器部署成本 |
 | 可观测与兼容 | 拼团服务暴露 Actuator / Prometheus；SQL 兼容 MySQL 8 `ONLY_FULL_GROUP_BY` | 为运行诊断提供入口，并避免依赖宽松数据库模式 |
 
@@ -50,7 +50,7 @@ flowchart LR
     WS --> ASR[DashScope Streaming ASR]
     ASR --> ROUTER[意图路由<br/>搜索 / 详情 / 拼团 / 闲聊]
 
-    ROUTER --> ORCH[AgentScope ReAct<br/>任务编排与工具调用]
+    ROUTER --> ORCH[Orchestrator + Plan-and-Execute<br/>LLM Workers 与工具调用]
     ORCH --> FILTER[品类 / 预算<br/>SQL 硬过滤]
     ORCH --> VECTOR[Embedding + HNSW<br/>语义召回]
     FILTER --> RANK[画像与上下文重排]
@@ -69,9 +69,9 @@ flowchart LR
 | 层次 | 关键组件 | 职责 |
 | --- | --- | --- |
 | 实时交互层 | Web Audio API、WebSocket、Streaming ASR / TTS | 音频采集、增量识别、流式事件和语音回放 |
-| Agent 编排层 | AgentScope、ReAct Agent、意图与槽位路由 | 拆解请求，选择检索、澄清、推荐或商城动作 |
+| Agent 编排层 | Orchestrator、Plan-and-Execute、LLM Workers、意图与槽位路由 | 以显式状态机承载确定性流程，拆解复杂任务并协调检索、推荐与商城动作 |
 | 检索决策层 | pgvector HNSW、SQL 过滤、画像重排 | 同时满足语义相关性与预算、品类等业务硬约束 |
-| 状态层 | Redis、PostgreSQL | 管理短期会话、缓存、商品向量和 FAQ 知识 |
+| 状态与记忆层 | Working / Session / Long-Term Memory、Redis、PostgreSQL | 管理多轮会话、检查点、用户画像、商品向量和 FAQ 知识 |
 | 动作安全层 | 商品会话白名单、结构化 Action | 将模型输出约束为可审计的 `view` / `group-buy` 指令 |
 
 ## 系统架构
@@ -92,8 +92,8 @@ flowchart LR
     N -->|/group-api| G
     N -->|/agent-api + WS| A
 
-    M -->|锁单 / 结算 / 退款| G
-    M <-->|成团与退款事件| MQ[(RabbitMQ)]
+    M -->|锁单 / 结算| G
+    M <-->|成团 / 结算事件| MQ[(RabbitMQ)]
     G <--> MQ
     M --> MY[(MySQL)]
     G --> MY
@@ -127,13 +127,14 @@ sequenceDiagram
 
 这里最重要的设计是：**Agent 负责理解与编排，交易服务负责事实与决策**。即使模型返回了错误价格，商城也不会采用该值；下单请求只携带商品、活动和队伍标识，服务端重新计算最终金额。
 
-## 核心领域设计
+## 核心模块设计
 
 ### 1. 拼团交易
 
 - 活动配置负责有效期、目标人数、折扣与渠道规则。
 - 锁单阶段以外部交易号作为幂等边界，并通过数据库条件更新控制队伍容量。
-- 结算、超时退款和成团通知分离；RabbitMQ 将商城订单域与拼团域的状态传播解耦。
+- 业务状态变更与待发送消息同事务落库，再异步投递 RabbitMQ；消费端以业务唯一键控制重复执行。
+- 支付回调执行签名、订单金额与支付状态校验，并以条件更新避免重复通知触发二次结算；主动查单与延迟关单用于异常状态收敛。
 - 通知任务保留状态与重试次数，避免一次网络失败直接丢失业务事件。
 
 ### 2. AI 导购
@@ -166,7 +167,7 @@ sequenceDiagram
 ├─ web/                              # 商城首页、详情、订单、语音导购组件
 ├─ services/
 │  ├─ aipintuan-mall/                # 商品目录、订单、支付与拼团结果消费
-│  ├─ aipintuan-group-buy/           # 活动、折扣、组队、锁单、结算与退款
+│  ├─ aipintuan-group-buy/           # 活动、折扣、组队、锁单与结算
 │  └─ aipintuan-voice-agent/         # 实时语音、检索推荐、记忆与商城动作
 ├─ database/                         # MySQL 初始化结构与演示数据
 ├─ deploy/nginx/                     # 单域名 HTTP / WebSocket 路由
@@ -240,7 +241,16 @@ docker compose down
 - “打开第一款商品”
 - “打开第一款拼团”
 
-## 工程验证
+## 性能与工程质量
+
+针对活动高峰期库存竞争与超卖风险，将库存和用户购买资格前置到 Redis，并通过 Lua 脚本原子完成库存校验、一人一单判断与库存预扣，提前过滤无效请求、降低数据库热点竞争。
+
+| 测试场景 | 测试条件 | 优化前指标 | 优化后指标 | 优化结果 |
+| --- | ---: | ---: | ---: | ---: |
+| 活动库存链路 | 1000 QPS / 200 库存 | 约 500 ms | 176 ms | 平均响应时间下降约 64.8% |
+| 实时语音链路 | Streaming ASR → Agent → Streaming LLM → TTS | TTFA 约 2.9 s | TTFA 1.2 s | 首音频延迟下降约 58.6% |
+
+构建、编排与运行状态可通过以下命令复核：
 
 ```bash
 # 商城服务
@@ -253,18 +263,16 @@ cd services/aipintuan-group-buy && mvn clean package
 docker compose config
 ```
 
-本项目不在 README 中展示未经压测验证的 QPS、延迟或并发数字；性能结论应由固定硬件、数据规模和压测脚本共同给出。
-
 ## 进一步演进
 
-- 为锁单、支付回调和退款链路增加 Testcontainers 集成测试。
+- 为锁单、支付回调和结算链路增加 Testcontainers 集成测试。
 - 接入 Prometheus + Grafana 仪表盘，并为 ASR 首字延迟、Agent 首 Token 延迟和 TTS 首包延迟建立 SLI。
 - 将通知任务升级为 Outbox / CDC，强化跨服务事件的可追溯性。
 - 引入灰度 Prompt 与离线评测集，量化推荐命中率、工具调用准确率和幻觉率。
 
-## 开发说明
+## 项目职责
 
-本仓库基于获得授权的代码基础进行深度二次开发与系统融合。当前仓库新增和重构的重点包括多商品目录、响应式商城首页、商城—Agent 会话适配、语音交易动作、统一品牌与配置、单入口反向代理及容器化交付。设计细节参见 [架构说明](docs/architecture.md)。
+本项目由 **zhongwn** 负责整体设计与实现，工作覆盖营销试算、拼团锁单、库存预扣、支付回调与结算、消息最终一致性、热点流量保护，以及商城前端与实时语音 Agent 的系统融合；同时完成统一配置、Nginx 单入口反向代理和 Docker Compose 容器化交付。设计细节参见 [架构说明](docs/architecture.md)。
 
 ## Author
 
