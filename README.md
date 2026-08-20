@@ -5,9 +5,8 @@
 </p>
 
 <p align="center">
-  <img alt="Java 8 / 21" src="https://img.shields.io/badge/Java-8%20%2F%2021-ED8B00?logo=openjdk&logoColor=white">
-  <img alt="Spring Boot" src="https://img.shields.io/badge/Spring%20Boot-2.7%20%2F%204.x-6DB33F?logo=springboot&logoColor=white">
-  <img alt="Architecture" src="https://img.shields.io/badge/Architecture-DDD-6C63FF">
+  <img alt="Java 21" src="https://img.shields.io/badge/Java-21-ED8B00?logo=openjdk&logoColor=white">
+  <img alt="Spring Boot 4.0.5" src="https://img.shields.io/badge/Spring%20Boot-4.0.5-6DB33F?logo=springboot&logoColor=white">
   <img alt="AI" src="https://img.shields.io/badge/AI-Streaming%20ASR%20%7C%20RAG%20%7C%20TTS-5B5BD6">
   <img alt="Deployment" src="https://img.shields.io/badge/Deployment-Docker%20Compose-2496ED?logo=docker&logoColor=white">
 </p>
@@ -42,6 +41,38 @@
 | 领域建模 | 商城与拼团分别采用 API / Trigger / Domain / Infrastructure / Types 分层 | 让活动规则、交易规则和基础设施实现保持清晰边界 |
 | 单入口交付 | Nginx 同域代理 HTTP 与 WebSocket；Compose 编排 8 个应用与基础设施容器 | 浏览器只访问一个地址，降低本地联调和服务器部署成本 |
 | 可观测与兼容 | 拼团服务暴露 Actuator / Prometheus；SQL 兼容 MySQL 8 `ONLY_FULL_GROUP_BY` | 为运行诊断提供入口，并避免依赖宽松数据库模式 |
+
+## Agent 技术架构
+
+```mermaid
+flowchart LR
+    MIC[Web Audio API<br/>PCM 音频流] --> WS[WebSocket Gateway<br/>会话与流控]
+    WS --> ASR[DashScope Streaming ASR]
+    ASR --> ROUTER[意图路由<br/>搜索 / 详情 / 拼团 / 闲聊]
+
+    ROUTER --> ORCH[AgentScope ReAct<br/>任务编排与工具调用]
+    ORCH --> FILTER[品类 / 预算<br/>SQL 硬过滤]
+    ORCH --> VECTOR[Embedding + HNSW<br/>语义召回]
+    FILTER --> RANK[画像与上下文重排]
+    VECTOR --> RANK
+
+    RANK --> LLM[DashScope LLM<br/>生成推荐解释]
+    LLM --> ACTION[Action Guard<br/>白名单商品与结构化动作]
+    ACTION --> EVENT[增量文字 / 商品卡片<br/>view / group-buy]
+    EVENT --> TTS[Streaming TTS]
+    EVENT --> WEB[商城页面执行受控跳转]
+
+    PG[(PostgreSQL + pgvector)] --> VECTOR
+    REDIS[(Redis<br/>短期记忆与缓存)] <--> ORCH
+```
+
+| 层次 | 关键组件 | 职责 |
+| --- | --- | --- |
+| 实时交互层 | Web Audio API、WebSocket、Streaming ASR / TTS | 音频采集、增量识别、流式事件和语音回放 |
+| Agent 编排层 | AgentScope、ReAct Agent、意图与槽位路由 | 拆解请求，选择检索、澄清、推荐或商城动作 |
+| 检索决策层 | pgvector HNSW、SQL 过滤、画像重排 | 同时满足语义相关性与预算、品类等业务硬约束 |
+| 状态层 | Redis、PostgreSQL | 管理短期会话、缓存、商品向量和 FAQ 知识 |
+| 动作安全层 | 商品会话白名单、结构化 Action | 将模型输出约束为可审计的 `view` / `group-buy` 指令 |
 
 ## 系统架构
 
@@ -122,9 +153,9 @@ sequenceDiagram
 
 | 子系统 | 技术 |
 | --- | --- |
-| 商城服务 | Java 8、Spring Boot 2.7、MyBatis、MySQL、RabbitMQ |
-| 拼团服务 | Java 8、Spring Boot 2.7、DDD、MyBatis、Redis / Redisson、RabbitMQ、Actuator |
-| 语音 Agent | Java 21、Spring Boot 4、AgentScope、DashScope、WebSocket、PostgreSQL / pgvector、Redis |
+| 商城服务 | Java、Spring Boot、MyBatis、MySQL、RabbitMQ |
+| 拼团服务 | Java、Spring Boot、MyBatis、Redis / Redisson、RabbitMQ、Actuator |
+| 语音 Agent | Java 21、Spring Boot 4.0.5、AgentScope、DashScope、WebSocket、PostgreSQL / pgvector、Redis |
 | Web | HTML5、CSS3、Vanilla JavaScript、响应式布局、Web Audio API |
 | 交付 | Docker Compose、Nginx、健康检查、持久化 Volume、环境变量注入 |
 
